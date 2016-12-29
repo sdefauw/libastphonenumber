@@ -16,6 +16,14 @@
 
 #define BOOL2STR(b)     b ? "Yes" : "No"
 
+
+void print_region_info(char* country) {
+
+	printf("=== REGION INFO (%s) ===\n", country);
+	printf(" - Country: %s\n", country);
+	printf(" - Country calling code: %d\n", get_country_code_for_region(country));
+}
+
 void print_num_info(char* num, char* country) {
 	char buf[100];
 
@@ -54,13 +62,6 @@ void print_formatted(char* num, char* country) {
 	printf(" - National compact: %s\n", buf);
 	num_format(num, country, NATIONAL_SHORT, buf);
 	printf(" - National short: %s\n", buf);
-}
-
-void print_region_info(char* country) {
-
-	printf("=== REGION INFO (%s) ===\n", country);
-	printf(" - Country: %s\n", country);
-	printf(" - Country calling code: %d\n", get_country_code_for_region(country));
 }
 
 int main(int argc, char **argv)

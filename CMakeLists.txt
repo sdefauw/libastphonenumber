@@ -6,8 +6,9 @@ set(libastphonenumber_VERSION_MINOR 0)
 
 set(
         ASTPHONENUMBER_SOURCE
-        "src/libastformat.cpp"
-)
+        src/libastformat.cpp
+        src/numinfo.cpp
+        src/regioninfo.cpp)
 
 # STATIC LIBRARY
 add_library(astphonenumber STATIC ${ASTPHONENUMBER_SOURCE})
@@ -28,7 +29,9 @@ set_property(TARGET astphonenumber-shared PROPERTY POSITION_INDEPENDENT_CODE ON)
 # INSTALL
 SET(CMAKE_INSTALL_PREFIX /usr)
 install(FILES
-        "src/libastformat.h"
+        src/libastformat.h
+        src/numinfo.h
+        src/regioninfo.h
         DESTINATION include/astphonenumbers/
         )
 install(TARGETS astphonenumber LIBRARY DESTINATION lib/ ARCHIVE DESTINATION lib/)
@@ -40,3 +43,9 @@ add_executable(
         "test/test_lib_dyn_load.c"
 )
 target_link_libraries(test_dyn_load dl)
+
+add_executable(
+        test_num_info
+        "test/test_info.c"
+)
+target_link_libraries(test_num_info astphonenumber)

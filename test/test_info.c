@@ -28,6 +28,8 @@ void print_num_info(char* num, char* country) {
 	get_region(num, country, buf);
 	printf(" - Country: %s\n", buf);
 
+	printf(" - Type: %s\n", phone_type_str[get_number_type(num, country)]);
+
 
 	get_region(num, country, buf);
 	print_region_info(buf);

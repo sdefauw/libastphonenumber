@@ -55,4 +55,11 @@ int get_country_code(char* number, char* country) {
 	return (int) num.country_code();
 }
 
-//TODO type of number
+enum phone_type get_number_type(char* number, char* country) {
+
+	PhoneNumber num;
+	const PhoneNumberUtil& phone_util = *PhoneNumberUtil::GetInstance();
+	phone_util.Parse(number, country, &num);
+
+	return (enum phone_type) phone_util.GetNumberType(num);
+}

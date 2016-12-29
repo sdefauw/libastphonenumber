@@ -44,18 +44,38 @@
 /*** DOCUMENTATION
 	<function name="FORMATNUM" language="en_US">
  		<synopsis>
-			Get formatted number in +E.164 format.
+			Format a number.
 		</synopsis>
 		<syntax argsep=":">
 			<parameter name="number" required="true">
 				<para>Number to format.</para>
 			</parameter>
 			<parameter name="country" required="true">
-				<para>Country where national number will be reformatted</para>
+				<para>Country where national number will be reformatted. It must be 2 characters: ISO 3166-1</para>
+			</parameter>
+			<parameter name="format" required="true">
+				<para>Ouput format type</para>
+				<enumlist>
+					<enum name="e164">
+						<para>E.164 format: https://en.wikipedia.org/wiki/E.164.</para>
+					</enum>
+					<enum name="+e164">
+						<para>+E.164 format.</para>
+					</enum>
+					<enum name="nat">
+						<para>National format.</para>
+					</enum>
+					<enum name="nat_short">
+						<para>National format without national prefix.</para>
+					</enum>
+					<enum name="ext">
+						<para>Format number to call like you are in the country. National format or add an international call prefix.</para>
+					</enum>
+				</enumlist>
 			</parameter>
 		</syntax>
 		<description>
-			<para>Format a number in +E.164.</para>
+			<para>Get formatted number in specific format based on a country.</para>
 		</description>
 	</function>
  ***/
@@ -179,8 +199,9 @@ static char *cli_formatnum_e164(struct ast_cli_entry *e, int cmd, struct ast_cli
 
 static int format_num_func_read(struct ast_channel *chan, const char *cmd, char *data, char *buf, size_t len)
 {
-	char *number, *country;
+	char *number, *country, *option;
 	char number_formatted[len];
+	enum phone_format format;
 
 	number = ast_strdupa(data);
 
@@ -189,13 +210,33 @@ static int format_num_func_read(struct ast_channel *chan, const char *cmd, char 
 		country++;
 	}
 
-	if (ast_strlen_zero(number) || ast_strlen_zero(country)) {
+	if ((option = strchr(country, ':'))) {
+		*option = '\0';
+		option++;
+	}
+
+
+	if (ast_strlen_zero(number) || ast_strlen_zero(country) || ast_strlen_zero(option)) {
 		ast_log(LOG_ERROR, "This function needs a number and a country: number:country\n");
 		return 0;
 	}
 
-	// TODO
-	//(*e164_format)(number, country, number_formatted);
+	if(!strcasecmp(option, "+e164")) {
+		format = PLUSE164;
+	} else if (!strcasecmp(option, "e164")) {
+		format = E164;
+	} else if (!strcasecmp(option, "nat")) {
+		format = NATIONAL_COMPACT;
+	} else if (!strcasecmp(option, "nat_short")) {
+		format = NATIONAL_SHORT;
+	} else if (!strcasecmp(option, "ext")) {
+		format = EXTERNAL_CALL;
+	} else {
+		format = PLUSE164;
+	}
+
+	ast_debug(3, "Format number %s %s(%d) in %s country.\n", number, option, format, country);
+	(*num_format_fn)(number, country, format, number_formatted);
 
 	ast_copy_string(buf, number_formatted, len);
 

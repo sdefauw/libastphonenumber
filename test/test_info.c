@@ -12,7 +12,7 @@
 
 #include "../src/regioninfo.h"
 #include "../src/numinfo.h"
-#include "../src/libastformat.h"
+#include "../src/formatting.h"
 
 #define BOOL2STR(b)     b ? "Yes" : "No"
 
@@ -38,8 +38,20 @@ void print_formatted(char* num, char* country) {
 
 	printf("=== NUMBER FORMATTED ===\n");
 	printf(" - Original number: %s\n", num);
-	e164_format(num, country, buf);
+	num_format(num, country, PLUSE164, buf);
+	printf(" - +E.164: %s\n", buf);
+	num_format(num, country, E164, buf);
 	printf(" - E.164: %s\n", buf);
+	num_format(num, country, INTERNATIONAL, buf);
+	printf(" - International: %s\n", buf);
+	num_format(num, country, EXTERNAL_CALL, buf);
+	printf(" - External: %s\n", buf);
+	num_format(num, country, NATIONAL, buf);
+	printf(" - National: %s\n", buf);
+	num_format(num, country, NATIONAL_COMPACT, buf);
+	printf(" - National compact: %s\n", buf);
+	num_format(num, country, NATIONAL_SHORT, buf);
+	printf(" - National short: %s\n", buf);
 }
 
 void print_region_info(char* country) {

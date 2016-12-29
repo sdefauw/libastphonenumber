@@ -38,6 +38,9 @@
 #include "asterisk/channel.h"
 #include "asterisk/cli.h"
 
+#include "astphonenumbers/formatting.h"
+#include "astphonenumbers/numinfo.h"
+
 /*** DOCUMENTATION
 	<function name="FORMATNUM" language="en_US">
  		<synopsis>
@@ -57,8 +60,14 @@
 	</function>
  ***/
 
+#define BOOL2STR(b)     b ? "Yes" : "No"
 
-static int (*e164_format)(char *, char *, char *);
+static int (*num_format_fn)(char *, char *, enum phone_format, char *);
+static int (*is_valid_number_fn)(char* , char*, int);
+static int (*get_region_fn)(char* , char* , char *);
+static int (*get_country_code_fn)(char* , char*);
+static enum phone_type (*get_number_type_fn)(char* , char*);
+static int (*get_country_code_for_region_fn)(char* region);
 
 static void *lib_astphonenumber_handle;
 
@@ -82,9 +91,9 @@ static char *cli_formatnum_info(struct ast_cli_entry *e, int cmd, struct ast_cli
 {
 	switch (cmd) {
 	case CLI_INIT:
-		e->command = "number format info";
+		e->command = "number lib info";
 		e->usage =
-			"Usage: number format info\n"
+			"Usage: number lib info\n"
 			"       Display information about the formatting library\n";
 		return NULL;
 	case CLI_GENERATE:
@@ -96,26 +105,29 @@ static char *cli_formatnum_info(struct ast_cli_entry *e, int cmd, struct ast_cli
 	}
 
 	if (!lib_astphonenumber_handle) {
-		ast_cli(a->fd, "Exernal library unloaded !\n");
+		ast_cli(a->fd, "External library unloaded !\n");
 		return CLI_SUCCESS;
 	}
 
 	// TODO add more info
-	ast_cli(a->fd, " - Exernal library\n \t * /usr/lib/libastphonenumber.so loaded\n");
+	ast_cli(a->fd, " - External library\n \t * /usr/lib/libastphonenumber.so loaded\n");
 
 	return CLI_SUCCESS;
 }
 
 static char *cli_formatnum_e164(struct ast_cli_entry *e, int cmd, struct ast_cli_args *a)
 {
-	char formatted_num[100];
+	char buf[100];
+	char *number;
+	char *country;
 
 	switch (cmd) {
 	case CLI_INIT:
-		e->command = "number format";
+		e->command = "number info";
 		e->usage =
-			"Usage: number format <number> <country>\n"
-			"       Format the number based on the country\n";
+			"Usage: number info <number> <country>\n"
+			"       Get information about the number in the country specified.\n";
+			"       Validity, country, type of number, region information and some formatting.\n";
 		return NULL;
 	case CLI_GENERATE:
 		return NULL;
@@ -125,13 +137,42 @@ static char *cli_formatnum_e164(struct ast_cli_entry *e, int cmd, struct ast_cli
 		return CLI_SHOWUSAGE;
 	}
 
-	memset(formatted_num, 0, 100);
+	number = (char*) a->argv[2];
+	country = (char*) a->argv[3];
 
-	(*e164_format)(a->argv[2], a->argv[3], formatted_num);
+	memset(buf, 0, 100);
 
-	ast_cli(a->fd, " - Original number: %s\n", a->argv[2]);
-	ast_cli(a->fd, " - Country: %s\n", a->argv[3]);
-	ast_cli(a->fd, " => Formatted number: %s\n", formatted_num);
+	ast_cli(a->fd, "Original inforamtion\n");
+	ast_cli(a->fd, " - Number: %s\n", number);
+	ast_cli(a->fd, " - Country: %s\n", country);
+
+	ast_cli(a->fd, "Number information\n");
+	ast_cli(a->fd, " - Is valid number: %s\n", BOOL2STR((*is_valid_number_fn)(number, country, 0)));
+	ast_cli(a->fd, " - Is valid number in %s: %s\n", country, BOOL2STR((*is_valid_number_fn)(number, country, 1)));
+	ast_cli(a->fd, " - Country calling code: %d\n", (*get_country_code_fn)(number, country));
+	(*get_region_fn)(number, country, buf);
+	ast_cli(a->fd, " - Country: %s\n", buf);
+	ast_cli(a->fd, " - Type: %s\n", phone_type_str[(*get_number_type_fn)(number, country)]);
+
+	ast_cli(a->fd, "Region information\n");
+	ast_cli(a->fd, " - %s country calling code: %d\n", buf, (*get_country_code_for_region_fn)(buf));
+	ast_cli(a->fd, " - %s country calling code: %d\n", country, (*get_country_code_for_region_fn)(country));
+
+	ast_cli(a->fd, "Formatting result\n");
+	(*num_format_fn)(number, country, PLUSE164, buf);
+	ast_cli(a->fd, " - +E.164: %s\n", buf);
+	(*num_format_fn)(number, country, E164, buf);
+	ast_cli(a->fd, " - E.164: %s\n", buf);
+	(*num_format_fn)(number, country, INTERNATIONAL, buf);
+	ast_cli(a->fd, " - International: %s\n", buf);
+	(*num_format_fn)(number, country, EXTERNAL_CALL, buf);
+	ast_cli(a->fd, " - External call: %s\n", buf);
+	(*num_format_fn)(number, country, NATIONAL, buf);
+	ast_cli(a->fd, " - National: %s\n", buf);
+	(*num_format_fn)(number, country, NATIONAL_COMPACT, buf);
+	ast_cli(a->fd, " - National (compact): %s\n", buf);
+	(*num_format_fn)(number, country, NATIONAL_SHORT, buf);
+	ast_cli(a->fd, " - National (short): %s\n", buf);
 
 	return CLI_SUCCESS;
 }
@@ -153,7 +194,8 @@ static int format_num_func_read(struct ast_channel *chan, const char *cmd, char 
 		return 0;
 	}
 
-	(*e164_format)(number, country, number_formatted);
+	// TODO
+	//(*e164_format)(number, country, number_formatted);
 
 	ast_copy_string(buf, number_formatted, len);
 
@@ -188,7 +230,12 @@ static int load_module(void)
 		return 1;
 	}
 	// Load functions
-	e164_format = (int (*)(char *, char *, char *))dlsym(lib_astphonenumber_handle, "e164_format");
+	num_format_fn = (int (*)(char *, char *, enum phone_format, char *)) dlsym(lib_astphonenumber_handle, "num_format");
+	is_valid_number_fn = (int (*)(char*, char*, int)) dlsym(lib_astphonenumber_handle, "is_valid_number");
+	get_region_fn = (int (*)(char*, char* , char *)) dlsym(lib_astphonenumber_handle, "get_region");
+	get_country_code_fn = (int (*)(char*, char*)) dlsym(lib_astphonenumber_handle, "get_country_code");
+	get_number_type_fn = (enum phone_type (*)(char*, char*)) dlsym(lib_astphonenumber_handle, "get_number_type");
+	get_country_code_for_region_fn = (int (*)(char*)) dlsym(lib_astphonenumber_handle, "get_country_code_for_region");
 	if ((error = dlerror()) != NULL){
 		ast_log(LOG_WARNING, "Unable to load functions on libastphonenumber.so: %s\n", error);
 		return 1;

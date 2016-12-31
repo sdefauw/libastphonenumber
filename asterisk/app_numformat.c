@@ -44,7 +44,7 @@
 /*** DOCUMENTATION
 	<function name="FORMATNUM" language="en_US">
  		<synopsis>
-			Format a number.
+			Get formatted number in specific format based on a country.
 		</synopsis>
 		<syntax argsep=":">
 			<parameter name="number" required="true">
@@ -75,7 +75,31 @@
 			</parameter>
 		</syntax>
 		<description>
-			<para>Get formatted number in specific format based on a country.</para>
+			<para>Format a number in +E.164.</para>
+		</description>
+	</function>
+	<function name="VALIDNUM" language="en_US">
+ 		<synopsis>
+			Check validity of a number.
+		</synopsis>
+		<syntax argsep=":">
+			<parameter name="number" required="true">
+				<para>Number to check.</para>
+			</parameter>
+			<parameter name="country" required="true">
+				<para>Country where national number will be bring to account. It must be 2 characters: ISO 3166-1</para>
+			</parameter>
+			<parameter name="option" required="false">
+				<para>Option</para>
+				<enumlist>
+					<enum name="l">
+						<para>Check if the number is valid in the country specified the second field.</para>
+					</enum>
+				</enumlist>
+			</parameter>
+		</syntax>
+		<description>
+			<para>This function returns 1 if the number is valid. Otherwise, it returns 0. An option can check if the number belongs only to the country.</para>
 		</description>
 	</function>
  ***/
@@ -95,6 +119,7 @@ static char *cli_formatnum_e164(struct ast_cli_entry *e, int cmd, struct ast_cli
 static char *cli_formatnum_info(struct ast_cli_entry *e, int cmd, struct ast_cli_args *a);
 
 static int format_num_func_read(struct ast_channel *chan, const char *cmd, char *data, char *buf, size_t len);
+static int valid_num_func_read(struct ast_channel *chan, const char *cmd, char *data, char *buf, size_t len);
 
 /*! \brief Format Number Cli commands definition */
 static struct ast_cli_entry cli_formatnum[] = {
@@ -105,6 +130,11 @@ static struct ast_cli_entry cli_formatnum[] = {
 static struct ast_custom_function format_num_function = {
 	.name = "FORMATNUM",
 	.read = format_num_func_read,
+};
+
+static struct ast_custom_function valid_num_function = {
+	.name = "VALIDNUM",
+	.read = valid_num_func_read,
 };
 
 static char *cli_formatnum_info(struct ast_cli_entry *e, int cmd, struct ast_cli_args *a)
@@ -243,6 +273,45 @@ static int format_num_func_read(struct ast_channel *chan, const char *cmd, char 
 	return 0;
 }
 
+static int valid_num_func_read(struct ast_channel *chan, const char *cmd, char *data, char *buf, size_t len)
+{
+	char *number, *country, *option;
+	int *is_valid;
+
+	number = ast_strdupa(data);
+
+	if ((country = strchr(number, ':'))) {
+		*country = '\0';
+		country++;
+	}
+
+	if ((option = strchr(country, ':'))) {
+		*option = '\0';
+		option++;
+	}
+
+	if (ast_strlen_zero(number) || ast_strlen_zero(country)) {
+		ast_log(LOG_ERROR, "This function needs a number and a country: number:country\n");
+		return 0;
+	}
+	if(!ast_strlen_zero(option) && strcasecmp(option, "l")) {
+		ast_log(LOG_ERROR, "Invalid option.\n");
+		return 0;
+	}
+
+	// Check validity of the number
+	is_valid = (*is_valid_number_fn)(number, country, (!ast_strlen_zero(option) && *option == 'l'));
+	if (!ast_strlen_zero(option) && *option == 'l') {
+		ast_debug(3, "Number %s is %s format in country %s.\n", number, is_valid ? "a valid" : "an invalid", country);
+	} else {
+		ast_debug(3, "Number %s is %s format.\n", number, is_valid ? "a valid" : "an invalid");
+	}
+	ast_copy_string(buf, is_valid ? "1" : "0", 2);
+
+
+	return 0;
+}
+
 static int unload_module(void)
 {
 	/* Unregister CLI commands */
@@ -250,6 +319,7 @@ static int unload_module(void)
 
 	/* Unregister all functions */
 	ast_custom_function_unregister(&format_num_function);
+	ast_custom_function_unregister(&valid_num_function);
 
 	/* Unlink the dynamic library */
 	dlclose(lib_astphonenumber_handle);
@@ -284,6 +354,7 @@ static int load_module(void)
 
 	/* Register all functions */
 	ast_custom_function_register(&format_num_function);
+	ast_custom_function_register(&valid_num_function);
 
 	return 0;
 }

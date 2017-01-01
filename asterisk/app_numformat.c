@@ -1,7 +1,7 @@
 /*
  * Asterisk -- An open source telephony toolkit.
  *
- * Copyright (c) 2016.
+ * Copyright (c) 2017.
  *
  * Sebastien De Fauw <sdefauw@gmail.com>
  *
@@ -17,7 +17,7 @@
 
 /*! \file
  *
- * \brief App to format numbers
+ * \brief App to format numbers and get inforamtion about phone numbers.
  *
  * \author Sebastien De Fauw <sdefauw@gmail.com>
  *
@@ -42,7 +42,7 @@
 #include "astphonenumbers/numinfo.h"
 
 /*** DOCUMENTATION
-	<function name="FORMATNUM" language="en_US">
+	<function name="FORMAT_NUM" language="en_US">
  		<synopsis>
 			Get formatted number in specific format based on a country.
 		</synopsis>
@@ -51,7 +51,7 @@
 				<para>Number to format.</para>
 			</parameter>
 			<parameter name="country" required="true">
-				<para>Country where national number will be reformatted. It must be 2 characters: ISO 3166-1</para>
+				<para>Two-letter country (ISO 3166-1) where the national number will be taken into account.</para>
 			</parameter>
 			<parameter name="format" required="true">
 				<para>Ouput format type</para>
@@ -69,16 +69,16 @@
 						<para>National format without national prefix.</para>
 					</enum>
 					<enum name="ext">
-						<para>Format number to call like you are in the country. National format or add an international call prefix.</para>
+						<para>Format number to call like you are in the country: National format or add an international call prefix.</para>
 					</enum>
 				</enumlist>
 			</parameter>
 		</syntax>
 		<description>
-			<para>Format a number in +E.164.</para>
+			<para>This function returns the number formatted.</para>
 		</description>
 	</function>
-	<function name="VALIDNUM" language="en_US">
+	<function name="IS_VALID_NUM" language="en_US">
  		<synopsis>
 			Check validity of a number.
 		</synopsis>
@@ -87,13 +87,13 @@
 				<para>Number to check.</para>
 			</parameter>
 			<parameter name="country" required="true">
-				<para>Country where national number will be bring to account. It must be 2 characters: ISO 3166-1</para>
+				<para>Two-letter country (ISO 3166-1) where the national number will be taken into account.</para>
 			</parameter>
 			<parameter name="option" required="false">
 				<para>Option</para>
 				<enumlist>
 					<enum name="l">
-						<para>Check if the number is valid in the country specified the second field.</para>
+						<para>Check if the number is valid only in the country specified.</para>
 					</enum>
 				</enumlist>
 			</parameter>
@@ -102,25 +102,25 @@
 			<para>This function returns 1 if the number is valid. Otherwise, it returns 0. An option can check if the number belongs only to the country.</para>
 		</description>
 	</function>
-	<function name="INFONUM" language="en_US">
+	<function name="NUM_INFO" language="en_US">
  		<synopsis>
-			Get inforamtions about a number.
+			Get information about a number.
 		</synopsis>
 		<syntax argsep=":">
 			<parameter name="number" required="true">
 				<para>Number to check.</para>
 			</parameter>
 			<parameter name="country" required="true">
-				<para>Country where national number will be bring to account. It must be 2 characters: ISO 3166-1</para>
+				<para>Two-letter country (ISO 3166-1) where the national number will be taken into account.</para>
 			</parameter>
 			<parameter name="option" required="true">
-				<para>Type of information to get</para>
+				<para>Type of information to get.</para>
 				<enumlist>
 					<enum name="ccc">
 						<para>Get the country calling code of the number.</para>
 					</enum>
 					<enum name="country">
-						<para>Country or region whose number is owned. The country is described by 2 characters: ISO 3166-1.</para>
+						<para>Country or region whose number is owned. The country is described by two-letter (ISO 3166-1).</para>
 					</enum>
 					<enum name="type">
 						<para>Type of phone numbers: FIXED_LINE, MOBILE, FIXED_LINE_OR_MOBILE, TOLL_FREE, PREMIUM_RATE, SHARED_COST, VOIP, PERSONAL_NUMBER, PAGER, UAN, VOICEMAIL or UNKNOWN.</para>
@@ -129,28 +129,28 @@
 			</parameter>
 		</syntax>
 		<description>
-			<para></para>
+			<para>This functionn returns information about a phone number.</para>
 		</description>
 	</function>
-	<function name="INFOREGION" language="en_US">
+	<function name="REGION_INFO" language="en_US">
  		<synopsis>
-			Get inforamtions about a country/region.
+			Get information about a country/region.
 		</synopsis>
 		<syntax argsep=":">
 			<parameter name="country" required="true">
-				<para>Country to get information. It must be 2 characters: ISO 3166-1</para>
+				<para>Two-letter country/region (ISO 3166-1) where the national number will be taken into account.</para>
 			</parameter>
 			<parameter name="option" required="true">
-				<para>Type of information to get</para>
+				<para>Type of information to get.</para>
 				<enumlist>
 					<enum name="ccc">
-						<para>Get the country calling code of the number.</para>
+						<para>Get the country calling code of the region.</para>
 					</enum>
 				</enumlist>
 			</parameter>
 		</syntax>
 		<description>
-			<para></para>
+			<para>This functionn returns information about a region.</para>
 		</description>
 	</function>
  ***/
@@ -181,22 +181,22 @@ static struct ast_cli_entry cli_formatnum[] = {
 };
 
 static struct ast_custom_function format_num_function = {
-	.name = "FORMATNUM",
+	.name = "FORMAT_NUM",
 	.read = format_num_func_read,
 };
 
 static struct ast_custom_function valid_num_function = {
-	.name = "VALIDNUM",
+	.name = "IS_VALID_NUM",
 	.read = valid_num_func_read,
 };
 
 static struct ast_custom_function info_num_function = {
-	.name = "INFONUM",
+	.name = "NUM_INFO",
 	.read = info_num_func_read,
 };
 
 static struct ast_custom_function info_region_function = {
-	.name = "INFOREGION",
+	.name = "REGION_INFO",
 	.read = info_region_func_read,
 };
 
@@ -222,7 +222,6 @@ static char *cli_formatnum_info(struct ast_cli_entry *e, int cmd, struct ast_cli
 		return CLI_SUCCESS;
 	}
 
-	// TODO add more info
 	ast_cli(a->fd, " - External library\n \t * /usr/lib/libastphonenumber.so loaded\n");
 
 	return CLI_SUCCESS;
@@ -239,7 +238,7 @@ static char *cli_formatnum_e164(struct ast_cli_entry *e, int cmd, struct ast_cli
 		e->command = "number info";
 		e->usage =
 			"Usage: number info <number> <country>\n"
-			"       Get information about the number in the country specified.\n";
+			"       Get information about the number in the country specified.\n"
 			"       Validity, country, type of number, region information and some formatting.\n";
 		return NULL;
 	case CLI_GENERATE:
@@ -339,7 +338,7 @@ static int format_num_func_read(struct ast_channel *chan, const char *cmd, char 
 static int valid_num_func_read(struct ast_channel *chan, const char *cmd, char *data, char *buf, size_t len)
 {
 	char *number, *country, *option;
-	int *is_valid;
+	int is_valid;
 
 	number = ast_strdupa(data);
 

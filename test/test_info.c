@@ -72,6 +72,11 @@ int main(int argc, char **argv)
 	number = argv[1];
 	country = argv[2];
 
+	if (!number || !country) {
+		printf("Invalid input ! Input: <NUMBER> <COUNTRY>\n");
+		return 0;
+	}
+
 	printf("=== INPUT ===\n");
 	printf(" - Number: %s\n", number);
 	printf(" - Country: %s\n", country);

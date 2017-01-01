@@ -15,8 +15,8 @@
 extern "C" {
 #endif
 
-/*
- * Type of output format
+/**
+ * Type of output phone format
  *  Example: 0473012345 in BE
  */
 enum phone_format {
@@ -42,7 +42,15 @@ enum phone_format {
 	NATIONAL_SHORT
 };
 
-
+/**
+ * Format a number into a specific phone format and based on a country.
+ *
+ * @param number		Number to format
+ * @param country		Two-letter country (ISO 3166-1) where the national number will be taken into account.
+ * @param type			Type of output phone format. @see enum phone_format
+ * @param formatted		Number that will be formatted.
+ * @return 				0 if there is no issue, otherwise 1
+ */
 int num_format(char* number, char* country, enum phone_format type, char* formatted);
 
 #ifdef __cplusplus

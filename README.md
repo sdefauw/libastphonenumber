@@ -1,5 +1,5 @@
 # Asterisk Libphonenumber
-libastphonenumber is a new library that exposes the [libphonenumber][https://github.com/googlei18n/libphonenumber] into [Asterisk][http://www.asterisk.org/].
+libastphonenumber is a new library that exposes the [libphonenumber](https://github.com/googlei18n/libphonenumber) into [Asterisk](http://www.asterisk.org/).
 
 ## Highlights of asterisk functions
  * ```FORMAT_NUM``` - Get formatted numbers in specific format based on a country.
@@ -14,7 +14,7 @@ The installation is processed in two parts:
 
 ### Requirements
 The installation of following programs are required:
- - The C++ part of [libphonenumner][https://github.com/googlei18n/libphonenumber/tree/master/cpp]
+ - The C++ part of [libphonenumner](https://github.com/googlei18n/libphonenumber/tree/master/cpp)
  - CMake
  - A gnu compiler compatible with c++11
  - Asterisk source code and be able to compile it.
@@ -34,4 +34,4 @@ Add Asterisk application to the source code:
 ```
 cp asterisk/app_numformat.c <ASTERISK_SOURCE_CODE_PATH>/apps/
 ```
-Compile Asterisk [source code][https://wiki.asterisk.org/wiki/display/AST/Installing+Asterisk+From+Source].
+Compile Asterisk [source code](https://wiki.asterisk.org/wiki/display/AST/Installing+Asterisk+From+Source).

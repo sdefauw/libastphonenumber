@@ -132,6 +132,27 @@
 			<para></para>
 		</description>
 	</function>
+	<function name="INFOREGION" language="en_US">
+ 		<synopsis>
+			Get inforamtions about a country/region.
+		</synopsis>
+		<syntax argsep=":">
+			<parameter name="country" required="true">
+				<para>Country to get information. It must be 2 characters: ISO 3166-1</para>
+			</parameter>
+			<parameter name="option" required="true">
+				<para>Type of information to get</para>
+				<enumlist>
+					<enum name="ccc">
+						<para>Get the country calling code of the number.</para>
+					</enum>
+				</enumlist>
+			</parameter>
+		</syntax>
+		<description>
+			<para></para>
+		</description>
+	</function>
  ***/
 
 #define BOOL2STR(b)     b ? "Yes" : "No"
@@ -151,6 +172,7 @@ static char *cli_formatnum_info(struct ast_cli_entry *e, int cmd, struct ast_cli
 static int format_num_func_read(struct ast_channel *chan, const char *cmd, char *data, char *buf, size_t len);
 static int valid_num_func_read(struct ast_channel *chan, const char *cmd, char *data, char *buf, size_t len);
 static int info_num_func_read(struct ast_channel *chan, const char *cmd, char *data, char *buf, size_t len);
+static int info_region_func_read(struct ast_channel *chan, const char *cmd, char *data, char *buf, size_t len);
 
 /*! \brief Format Number Cli commands definition */
 static struct ast_cli_entry cli_formatnum[] = {
@@ -171,6 +193,11 @@ static struct ast_custom_function valid_num_function = {
 static struct ast_custom_function info_num_function = {
 	.name = "INFONUM",
 	.read = info_num_func_read,
+};
+
+static struct ast_custom_function info_region_function = {
+	.name = "INFOREGION",
+	.read = info_region_func_read,
 };
 
 static char *cli_formatnum_info(struct ast_cli_entry *e, int cmd, struct ast_cli_args *a)
@@ -387,6 +414,34 @@ static int info_num_func_read(struct ast_channel *chan, const char *cmd, char *d
 	return 0;
 }
 
+static int info_region_func_read(struct ast_channel *chan, const char *cmd, char *data, char *buf, size_t len)
+{
+	char *country, *option;
+
+	country = ast_strdupa(data);
+
+	if ((option = strchr(country, ':'))) {
+		*option = '\0';
+		option++;
+	}
+
+	if (ast_strlen_zero(country) || ast_strlen_zero(option)) {
+		ast_log(LOG_ERROR, "This function needs a number and an option: country:option\n");
+		return 0;
+	}
+
+	// Get information about a region
+	if(!strcasecmp(option, "ccc")) {
+		// Get country calling code.
+		sprintf(buf, "%d", (*get_country_code_for_region_fn)(country));
+	} else {
+		ast_log(LOG_ERROR, "Invalid option\n");
+		return 0;
+	}
+
+	return 0;
+}
+
 static int unload_module(void)
 {
 	/* Unregister CLI commands */
@@ -396,6 +451,7 @@ static int unload_module(void)
 	ast_custom_function_unregister(&format_num_function);
 	ast_custom_function_unregister(&valid_num_function);
 	ast_custom_function_unregister(&info_num_function);
+	ast_custom_function_unregister(&info_region_function);
 
 	/* Unlink the dynamic library */
 	dlclose(lib_astphonenumber_handle);
@@ -432,6 +488,7 @@ static int load_module(void)
 	ast_custom_function_register(&format_num_function);
 	ast_custom_function_register(&valid_num_function);
 	ast_custom_function_register(&info_num_function);
+	ast_custom_function_register(&info_region_function);
 
 	return 0;
 }

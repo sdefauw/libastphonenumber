@@ -36,7 +36,7 @@ install(FILES
         src/formatting.h
         src/numinfo.h
         src/regioninfo.h
-        DESTINATION include/astphonenumbers/
+        DESTINATION include/astphonenumber/
         )
 install(TARGETS astphonenumber LIBRARY DESTINATION lib/ ARCHIVE DESTINATION lib/)
 install(TARGETS astphonenumber-shared LIBRARY DESTINATION lib/ ARCHIVE DESTINATION lib/)

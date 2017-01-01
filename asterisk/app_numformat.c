@@ -38,8 +38,8 @@
 #include "asterisk/channel.h"
 #include "asterisk/cli.h"
 
-#include "astphonenumbers/formatting.h"
-#include "astphonenumbers/numinfo.h"
+#include "astphonenumber/formatting.h"
+#include "astphonenumber/numinfo.h"
 
 /*** DOCUMENTATION
 	<function name="FORMAT_NUM" language="en_US">

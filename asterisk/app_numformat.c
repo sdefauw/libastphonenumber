@@ -102,6 +102,36 @@
 			<para>This function returns 1 if the number is valid. Otherwise, it returns 0. An option can check if the number belongs only to the country.</para>
 		</description>
 	</function>
+	<function name="INFONUM" language="en_US">
+ 		<synopsis>
+			Get inforamtions about a number.
+		</synopsis>
+		<syntax argsep=":">
+			<parameter name="number" required="true">
+				<para>Number to check.</para>
+			</parameter>
+			<parameter name="country" required="true">
+				<para>Country where national number will be bring to account. It must be 2 characters: ISO 3166-1</para>
+			</parameter>
+			<parameter name="option" required="true">
+				<para>Type of information to get</para>
+				<enumlist>
+					<enum name="ccc">
+						<para>Get the country calling code of the number.</para>
+					</enum>
+					<enum name="country">
+						<para>Country or region whose number is owned. The country is described by 2 characters: ISO 3166-1.</para>
+					</enum>
+					<enum name="type">
+						<para>Type of phone numbers: FIXED_LINE, MOBILE, FIXED_LINE_OR_MOBILE, TOLL_FREE, PREMIUM_RATE, SHARED_COST, VOIP, PERSONAL_NUMBER, PAGER, UAN, VOICEMAIL or UNKNOWN.</para>
+					</enum>
+				</enumlist>
+			</parameter>
+		</syntax>
+		<description>
+			<para></para>
+		</description>
+	</function>
  ***/
 
 #define BOOL2STR(b)     b ? "Yes" : "No"
@@ -120,6 +150,7 @@ static char *cli_formatnum_info(struct ast_cli_entry *e, int cmd, struct ast_cli
 
 static int format_num_func_read(struct ast_channel *chan, const char *cmd, char *data, char *buf, size_t len);
 static int valid_num_func_read(struct ast_channel *chan, const char *cmd, char *data, char *buf, size_t len);
+static int info_num_func_read(struct ast_channel *chan, const char *cmd, char *data, char *buf, size_t len);
 
 /*! \brief Format Number Cli commands definition */
 static struct ast_cli_entry cli_formatnum[] = {
@@ -135,6 +166,11 @@ static struct ast_custom_function format_num_function = {
 static struct ast_custom_function valid_num_function = {
 	.name = "VALIDNUM",
 	.read = valid_num_func_read,
+};
+
+static struct ast_custom_function info_num_function = {
+	.name = "INFONUM",
+	.read = info_num_func_read,
 };
 
 static char *cli_formatnum_info(struct ast_cli_entry *e, int cmd, struct ast_cli_args *a)
@@ -312,6 +348,45 @@ static int valid_num_func_read(struct ast_channel *chan, const char *cmd, char *
 	return 0;
 }
 
+static int info_num_func_read(struct ast_channel *chan, const char *cmd, char *data, char *buf, size_t len)
+{
+	char *number, *country, *option;
+
+	number = ast_strdupa(data);
+
+	if ((country = strchr(number, ':'))) {
+		*country = '\0';
+		country++;
+	}
+
+	if ((option = strchr(country, ':'))) {
+		*option = '\0';
+		option++;
+	}
+
+	if (ast_strlen_zero(number) || ast_strlen_zero(country) || ast_strlen_zero(option)) {
+		ast_log(LOG_ERROR, "This function needs a number, a country and an option: number:country:option\n");
+		return 0;
+	}
+
+	// Get information about the number
+	if(!strcasecmp(option, "ccc")) {
+		// Get country calling code.
+		sprintf(buf, "%d", (*get_country_code_fn)(number, country));
+	} else if (!strcasecmp(option, "country")) {
+		// Get country.
+		(*get_region_fn)(number, country, buf);
+	} else if (!strcasecmp(option, "type")) {
+		// Type of number.
+		strcpy(buf, phone_type_str[(*get_number_type_fn)(number, country)]);
+	} else {
+		ast_log(LOG_ERROR, "Invalid option\n");
+		return 0;
+	}
+
+	return 0;
+}
+
 static int unload_module(void)
 {
 	/* Unregister CLI commands */
@@ -320,6 +395,7 @@ static int unload_module(void)
 	/* Unregister all functions */
 	ast_custom_function_unregister(&format_num_function);
 	ast_custom_function_unregister(&valid_num_function);
+	ast_custom_function_unregister(&info_num_function);
 
 	/* Unlink the dynamic library */
 	dlclose(lib_astphonenumber_handle);
@@ -355,6 +431,7 @@ static int load_module(void)
 	/* Register all functions */
 	ast_custom_function_register(&format_num_function);
 	ast_custom_function_register(&valid_num_function);
+	ast_custom_function_register(&info_num_function);
 
 	return 0;
 }

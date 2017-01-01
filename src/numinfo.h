@@ -1,11 +1,3 @@
-/*
- * Libphonenmuber for Asterisk
- *
- * Copyright (c) 2016.
- *
- * Sebastien De Fauw <sdefauw@gmail.com>
- *
- */
 
 #ifndef LIBASTPHONENUMBER_NUMINFO_H
 #define LIBASTPHONENUMBER_NUMINFO_H

@@ -1,12 +1,3 @@
-/*
- * Libphonenmuber for Asterisk
- *
- * Copyright (c) 2016.
- *
- * Sebastien De Fauw <sdefauw@gmail.com>
- *
- */
-
 
 #include <stdio.h>
 #include <stdlib.h>

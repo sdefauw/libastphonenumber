@@ -19,6 +19,9 @@ The installation of following programs are required:
  - A gnu compiler compatible with c++11
  - Asterisk source code and be able to compile it.
 
+### Packaging
+To create a Debian version of the library, you can follow these [instructions](debian/README.md).
+
 ### Manual lib installation
 Compile the main library libastphonenumber:
 ```

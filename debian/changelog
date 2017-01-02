@@ -1,0 +1,5 @@
+libastphonenumber (1.0.0) all; urgency=low
+
+  * Initial version
+
+ -- Sebastien De Fauw <sdefauw@gmail.com>  Mon, 02 Jan 2017 14:02:01 +0100

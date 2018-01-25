@@ -43,13 +43,16 @@ install(TARGETS astphonenumber-shared LIBRARY DESTINATION lib/ ARCHIVE DESTINATI
 
 # TEST
 add_executable(
-        test_dyn_load
+        libastphonenumber_tester
         "test/test_lib_dyn_load.c"
 )
-target_link_libraries(test_dyn_load dl)
+target_link_libraries(libastphonenumber_tester dl)
 
 add_executable(
-        test_num_info
+        libastphonenumber_static_tester
         "test/test_info.c"
 )
-target_link_libraries(test_num_info astphonenumber)
+target_link_libraries(libastphonenumber_static_tester astphonenumber)
+
+# INSTALL tester
+install(TARGETS libastphonenumber_tester RUNTIME DESTINATION bin/ ARCHIVE DESTINATION bin/)

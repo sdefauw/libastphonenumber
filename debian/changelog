@@ -1,3 +1,9 @@
+libastphonenumber (1.0.1) all; urgency=medium
+
+  * Improvement: Add libphone number dependency
+
+ -- Sebastien De Fauw <sdefauw@gmail.com>  Thu, 25 Jan 2018 15:11:01 +0100
+
 libastphonenumber (1.0.0) all; urgency=low
 
   * Initial version

@@ -2,13 +2,25 @@ Source: libastphonenumber
 Section: misc
 Priority: optional
 Maintainer: Sebastien De Fauw <sdefauw@gmail.com>
-Build-Depends: debhelper (>= 7), git-core, cmake
+Build-Depends: debhelper (>= 7), git-core, cmake, libphonenumber-dev
 Homepage: https://github.com/sdefauw/libastphonenumber
 Vcs-Browser: https://github.com/sdefauw/libastphonenumber
 Vcs-Git: https://github.com/sdefauw/libastphonenumber.git
 
 
+Package: libastphonenumber-dev
+Section: libdevel
+Architecture: any
+Depends: libastphonenumber (=${binary:Version}), ${misc:Depends}
+Description: Expose Libphonenumber into Asterisk
+ .
+ This package contains the static libraries and include files.
+
 Package: libastphonenumber
-Architecture: all
-Depends: ${misc:Depends}
-Description: Asterisk Libphonenumber
+Section: libdevel
+Architecture: any
+Pre-Depends: ${misc:Pre-Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}, libphonenumber7
+Description: Expose Libphonenumber into Asterisk
+ .
+ This package contains the runtime libraries.

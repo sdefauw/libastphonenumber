@@ -7,5 +7,3 @@ debuild -uc -us
 ```
 
 The debian package file will be placed in the `../` directory. This can then be added to an APT repository or installed with `dpkg -i <package-file>`.
-
-> Note: libphonenumber is not included in dependency because only C++ part is mandatory.

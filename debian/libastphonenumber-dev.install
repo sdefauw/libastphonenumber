@@ -1,0 +1,3 @@
+usr/include/*
+usr/lib/libast*.a
+usr/lib/libast*.so

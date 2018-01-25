@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8)
 
 project(libastphonenumber)
 set(libastphonenumber_VERSION_MAJOR 1)
-set(libastphonenumber_VERSION_MINOR 0)
+set(libastphonenumber_VERSION_MINOR 1)
 
 if(UNIX)
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=gnu++0x")
@@ -43,13 +43,16 @@ install(TARGETS astphonenumber-shared LIBRARY DESTINATION lib/ ARCHIVE DESTINATI
 
 # TEST
 add_executable(
-        test_dyn_load
+        libastphonenumber_tester
         "test/test_lib_dyn_load.c"
 )
-target_link_libraries(test_dyn_load dl)
+target_link_libraries(libastphonenumber_tester dl)
 
 add_executable(
-        test_num_info
+        libastphonenumber_static_tester
         "test/test_info.c"
 )
-target_link_libraries(test_num_info astphonenumber)
+target_link_libraries(libastphonenumber_static_tester astphonenumber)
+
+# INSTALL tester
+install(TARGETS libastphonenumber_tester RUNTIME DESTINATION bin/ ARCHIVE DESTINATION bin/)

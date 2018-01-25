@@ -1,3 +1,11 @@
+libastphonenumber (1.1.0) all; urgency=low
+
+  * Feature: Embeds a testing binary of the library
+  * Feature: Debian build in two packages
+  * Improvement: Add libphone number dependency
+
+ -- Sebastien De Fauw <sdefauw@gmail.com>  Thu, 25 Jan 2018 15:11:01 +0100
+
 libastphonenumber (1.0.0) all; urgency=low
 
   * Initial version

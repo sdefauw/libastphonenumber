@@ -2,7 +2,7 @@ Source: libastphonenumber
 Section: misc
 Priority: optional
 Maintainer: Sebastien De Fauw <sdefauw@gmail.com>
-Build-Depends: debhelper (>= 7), git-core, cmake
+Build-Depends: debhelper (>= 7), git-core, cmake, libphonenumber-dev
 Homepage: https://github.com/sdefauw/libastphonenumber
 Vcs-Browser: https://github.com/sdefauw/libastphonenumber
 Vcs-Git: https://github.com/sdefauw/libastphonenumber.git

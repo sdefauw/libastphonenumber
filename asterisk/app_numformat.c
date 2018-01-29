@@ -466,9 +466,9 @@ static int load_module(void)
 	ast_cli_register_multiple(cli_formatnum, ARRAY_LEN(cli_formatnum));
 
 	/* Load external module */
-	lib_astphonenumber_handle = dlopen("/usr/lib/libastphonenumber.so", RTLD_LAZY);
+	lib_astphonenumber_handle = dlopen("/usr/lib/libastphonenumber.so.1", RTLD_LAZY);
 	if (!lib_astphonenumber_handle){
-		ast_log(LOG_WARNING, "Unable to load libastphonenumber.so: %s\n", dlerror());
+		ast_log(LOG_WARNING, "Unable to load libastphonenumber.so.1: %s\n", dlerror());
 		return 1;
 	}
 	// Load functions
@@ -479,7 +479,7 @@ static int load_module(void)
 	get_number_type_fn = (enum phone_type (*)(char*, char*)) dlsym(lib_astphonenumber_handle, "get_number_type");
 	get_country_code_for_region_fn = (int (*)(char*)) dlsym(lib_astphonenumber_handle, "get_country_code_for_region");
 	if ((error = dlerror()) != NULL){
-		ast_log(LOG_WARNING, "Unable to load functions on libastphonenumber.so: %s\n", error);
+		ast_log(LOG_WARNING, "Unable to load functions on libastphonenumber.so.1: %s\n", error);
 		return 1;
 	}
 

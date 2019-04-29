@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8)
 
 project(libastphonenumber)
 set(libastphonenumber_VERSION_MAJOR 1)
-set(libastphonenumber_VERSION_MINOR 1)
+set(libastphonenumber_VERSION_MINOR 2)
 
 if(UNIX)
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=gnu++0x")

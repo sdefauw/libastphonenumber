@@ -50,7 +50,8 @@ target_link_libraries(libastphonenumber_tester dl)
 
 add_executable(
         libastphonenumber_static_tester
-        "test/test_info.c"
+        "test/display.c"
+        "test/tester_static.c"
 )
 target_link_libraries(libastphonenumber_static_tester astphonenumber)
 

@@ -129,7 +129,7 @@
 			</parameter>
 		</syntax>
 		<description>
-			<para>This functionn returns information about a phone number.</para>
+			<para>This function returns information about a phone number.</para>
 		</description>
 	</function>
 	<function name="REGION_INFO" language="en_US">
@@ -150,7 +150,7 @@
 			</parameter>
 		</syntax>
 		<description>
-			<para>This functionn returns information about a region.</para>
+			<para>This function returns information about a region.</para>
 		</description>
 	</function>
  ***/
@@ -254,7 +254,7 @@ static char *cli_formatnum_e164(struct ast_cli_entry *e, int cmd, struct ast_cli
 
 	memset(buf, 0, 100);
 
-	ast_cli(a->fd, "Original inforamtion\n");
+	ast_cli(a->fd, "Original information\n");
 	ast_cli(a->fd, " - Number: %s\n", number);
 	ast_cli(a->fd, " - Country: %s\n", country);
 

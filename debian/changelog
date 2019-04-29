@@ -1,3 +1,13 @@
+libastphonenumber (1.2.0) all; urgency=medium
+
+  * Improvment: Remove some char when for some formatting
+  * Improvement: Review testing section
+  * Bugfix: Link to the right library version
+  * Bugfix: Fix debian installation issue between both packages
+  * Bugfix: Language typo issue
+
+ -- Sebastien De Fauw <sdefauw@gmail.com>  Mon, 29 Apr 2019 11:18:31 +0200
+
 libastphonenumber (1.1.0) all; urgency=low
 
   * Feature: Embeds a testing binary of the library

@@ -7,7 +7,9 @@
 #include "phonenumbers/phonenumber.pb.h"
 #include "phonenumbers/phonenumberutil.h"
 
-#define REMOVE_SPACES(x) x.erase(std::remove(x.begin(), x.end(), ' '), x.end())
+#define REMOVE_CHAR(x, c) ((x).erase(std::remove((x).begin(), (x).end(), (c)), (x).end()))
+#define REMOVE_SPACES(x) (REMOVE_CHAR(x, ' '))
+#define REMOVE_DASHES(x) (REMOVE_CHAR(x, '-'))
 
 using i18n::phonenumbers::PhoneNumber;
 using i18n::phonenumbers::PhoneNumberUtil;
@@ -42,6 +44,7 @@ int num_format(char* number, char* country, enum phone_format type, char* format
 		case EXTERNAL_CALL:
 			phone_util.FormatOutOfCountryCallingNumber(pnumber, country, &formatted_number);
 			REMOVE_SPACES(formatted_number);
+            REMOVE_DASHES(formatted_number);
 			break;
 		case NATIONAL:
 			phone_util.Format(pnumber, PhoneNumberUtil::NATIONAL, &formatted_number);
@@ -49,6 +52,9 @@ int num_format(char* number, char* country, enum phone_format type, char* format
 		case NATIONAL_COMPACT:
 			phone_util.Format(pnumber, PhoneNumberUtil::NATIONAL, &formatted_number);
 			REMOVE_SPACES(formatted_number);
+            REMOVE_DASHES(formatted_number);
+            REMOVE_CHAR(formatted_number, ')');
+            REMOVE_CHAR(formatted_number, '(');
 			break;
 		case NATIONAL_SHORT:
 			formatted_number = std::to_string(pnumber.national_number());

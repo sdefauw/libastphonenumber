@@ -302,7 +302,7 @@ static int format_num_func_read(struct ast_channel *chan, const char *cmd, char 
 		country++;
 	}
 
-	if ((option = strchr(country, ':'))) {
+	if (country && (option = strchr(country, ':'))) {
 		*option = '\0';
 		option++;
 	}
@@ -347,7 +347,7 @@ static int valid_num_func_read(struct ast_channel *chan, const char *cmd, char *
 		country++;
 	}
 
-	if ((option = strchr(country, ':'))) {
+	if (country && (option = strchr(country, ':'))) {
 		*option = '\0';
 		option++;
 	}
@@ -385,7 +385,7 @@ static int info_num_func_read(struct ast_channel *chan, const char *cmd, char *d
 		country++;
 	}
 
-	if ((option = strchr(country, ':'))) {
+	if (country && (option = strchr(country, ':'))) {
 		*option = '\0';
 		option++;
 	}

@@ -1,3 +1,9 @@
+libastphonenumber (1.2.1) all; urgency=medium
+
+  * Bugfix: Segfault when using NUM_INFO without all required arguments
+
+ -- Sebastien De Fauw <sdefauw@gmail.com>  Mon, 23 Sep 2019 16:04:25 +0200
+
 libastphonenumber (1.2.0) all; urgency=medium
 
   * Improvment: Remove some char when for some formatting

@@ -43,7 +43,7 @@
 
 /*** DOCUMENTATION
 	<function name="FORMAT_NUM" language="en_US">
- 		<synopsis>
+		<synopsis>
 			Get formatted number in specific format based on a country.
 		</synopsis>
 		<syntax argsep=":">
@@ -79,7 +79,7 @@
 		</description>
 	</function>
 	<function name="IS_VALID_NUM" language="en_US">
- 		<synopsis>
+		<synopsis>
 			Check validity of a number.
 		</synopsis>
 		<syntax argsep=":">
@@ -115,7 +115,7 @@
 		</description>
 	</function>
 	<function name="NUM_INFO" language="en_US">
- 		<synopsis>
+		<synopsis>
 			Get information about a number.
 		</synopsis>
 		<syntax argsep=":">
@@ -145,7 +145,7 @@
 		</description>
 	</function>
 	<function name="REGION_INFO" language="en_US">
- 		<synopsis>
+		<synopsis>
 			Get information about a country/region.
 		</synopsis>
 		<syntax argsep=":">
@@ -270,13 +270,13 @@ static char *cli_formatnum_e164(struct ast_cli_entry *e, int cmd, struct ast_cli
 	ast_cli(a->fd, " - Number: %s\n", number);
 	ast_cli(a->fd, " - Country: %s\n", country);
 
-    ast_cli(a->fd, "Number validation\n");
-    ast_cli(a->fd, " - Is valid number: %s\n", BOOL2STR((*is_valid_number_fn)(number, country, 0, 0)));
-    ast_cli(a->fd, " - Is valid short number:: %s\n", BOOL2STR((*is_valid_number_fn)(number, country, 0, 1)));
-    ast_cli(a->fd, " - Is valid number or short number:: %s\n", BOOL2STR((*is_valid_number_fn)(number, country, 0, 2)));
-    ast_cli(a->fd, " - Is valid number in %s: %s\n", country, BOOL2STR((*is_valid_number_fn)(number, country, 1, 0)));
-    ast_cli(a->fd, " - Is valid short number in %s: %s\n", country, BOOL2STR((*is_valid_number_fn)(number, country, 1, 1)));
-    ast_cli(a->fd, " - Is valid number or short number in %s: %s\n", country, BOOL2STR((*is_valid_number_fn)(number, country, 1, 2)));
+	ast_cli(a->fd, "Number validation\n");
+	ast_cli(a->fd, " - Is valid number: %s\n", BOOL2STR((*is_valid_number_fn)(number, country, 0, 0)));
+	ast_cli(a->fd, " - Is valid short number:: %s\n", BOOL2STR((*is_valid_number_fn)(number, country, 0, 1)));
+	ast_cli(a->fd, " - Is valid number or short number:: %s\n", BOOL2STR((*is_valid_number_fn)(number, country, 0, 2)));
+	ast_cli(a->fd, " - Is valid number in %s: %s\n", country, BOOL2STR((*is_valid_number_fn)(number, country, 1, 0)));
+	ast_cli(a->fd, " - Is valid short number in %s: %s\n", country, BOOL2STR((*is_valid_number_fn)(number, country, 1, 1)));
+	ast_cli(a->fd, " - Is valid number or short number in %s: %s\n", country, BOOL2STR((*is_valid_number_fn)(number, country, 1, 2)));
 
 	ast_cli(a->fd, "Number information\n");
 	ast_cli(a->fd, " - Country calling code: %d\n", (*get_country_code_fn)(number, country));
@@ -381,24 +381,24 @@ static int valid_num_func_read(struct ast_channel *chan, const char *cmd, char *
 
 	// Check validity of the option
 	if (ast_strlen_zero(option)) {
-        opt_local = 0;
-        opt_short_code = 0;
-    } else if (!strcasecmp(option, "l")) {
-        opt_local = 1;
-        opt_short_code = 0;
-    } else if (!strcasecmp(option, "s")) {
-        opt_local = 0;
-        opt_short_code = 1;
-    } else if (!strcasecmp(option, "ls")) {
-        opt_local = 1;
-        opt_short_code = 1;
-    } else if (!strcasecmp(option, "a")) {
-        opt_local = 0;
-        opt_short_code = 2;
-    } else if (!strcasecmp(option, "la")) {
-        opt_local = 1;
-        opt_short_code = 2;
-    } else {
+		opt_local = 0;
+		opt_short_code = 0;
+	} else if (!strcasecmp(option, "l")) {
+		opt_local = 1;
+		opt_short_code = 0;
+	} else if (!strcasecmp(option, "s")) {
+		opt_local = 0;
+		opt_short_code = 1;
+	} else if (!strcasecmp(option, "ls")) {
+		opt_local = 1;
+		opt_short_code = 1;
+	} else if (!strcasecmp(option, "a")) {
+		opt_local = 0;
+		opt_short_code = 2;
+	} else if (!strcasecmp(option, "la")) {
+		opt_local = 1;
+		opt_short_code = 2;
+	} else {
 		ast_log(LOG_ERROR, "Invalid option.\n");
 		return 0;
 	}
@@ -502,7 +502,7 @@ static int unload_module(void)
 
 static int load_module(void)
 {
-    char *error;
+	char *error;
 
 	/* Register all CLI functions for number formatting */
 	ast_cli_register_multiple(cli_formatnum, ARRAY_LEN(cli_formatnum));

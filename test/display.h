@@ -12,8 +12,10 @@
 
 #define BOOL2STR(b)     b ? "Yes" : "No"
 
-void print_region_info(char* country);
-void print_num_info(char* num, char* country);
-void print_formatted(char* num, char* country);
+void print_region_info(char *country);
+
+void print_num_info(char *num, char *country);
+
+void print_formatted(char *num, char *country);
 
 #endif //LIBASTPHONENUMBER_DISPLAY_H

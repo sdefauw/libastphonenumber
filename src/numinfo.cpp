@@ -13,14 +13,14 @@ using i18n::phonenumbers::PhoneNumber;
 using i18n::phonenumbers::PhoneNumberUtil;
 using i18n::phonenumbers::ShortNumberInfo;
 
-int is_valid_number(char* number, char* country, int local, int short_code) {
+int is_valid_number(char *number, char *country, int local, int short_code) {
 
-	PhoneNumber num;
-    const PhoneNumberUtil& phone_util = *PhoneNumberUtil::GetInstance();
-    const ShortNumberInfo& short_info = ShortNumberInfo();
+    PhoneNumber num;
+    const PhoneNumberUtil &phone_util = *PhoneNumberUtil::GetInstance();
+    const ShortNumberInfo &short_info = ShortNumberInfo();
     bool is_valid;
     bool is_valid_short_number;
-	phone_util.Parse(number, country, &num);
+    phone_util.Parse(number, country, &num);
 
     if (local) {
         is_valid = phone_util.IsValidNumberForRegion(num, country);
@@ -39,10 +39,10 @@ int is_valid_number(char* number, char* country, int local, int short_code) {
     return (int) is_valid;
 }
 
-int get_region(char* number, char* country, char *region) {
+int get_region(char *number, char *country, char *region) {
 
     PhoneNumber num;
-    const PhoneNumberUtil& phone_util = *PhoneNumberUtil::GetInstance();
+    const PhoneNumberUtil &phone_util = *PhoneNumberUtil::GetInstance();
     phone_util.Parse(number, country, &num);
 
     std::string r;
@@ -53,20 +53,20 @@ int get_region(char* number, char* country, char *region) {
     return 0;
 }
 
-int get_country_code(char* number, char* country) {
+int get_country_code(char *number, char *country) {
 
-	PhoneNumber num;
-	const PhoneNumberUtil& phone_util = *PhoneNumberUtil::GetInstance();
-	phone_util.Parse(number, country, &num);
+    PhoneNumber num;
+    const PhoneNumberUtil &phone_util = *PhoneNumberUtil::GetInstance();
+    phone_util.Parse(number, country, &num);
 
-	return (int) num.country_code();
+    return (int) num.country_code();
 }
 
-enum phone_type get_number_type(char* number, char* country) {
+enum phone_type get_number_type(char *number, char *country) {
 
-	PhoneNumber num;
-	const PhoneNumberUtil& phone_util = *PhoneNumberUtil::GetInstance();
-	phone_util.Parse(number, country, &num);
+    PhoneNumber num;
+    const PhoneNumberUtil &phone_util = *PhoneNumberUtil::GetInstance();
+    phone_util.Parse(number, country, &num);
 
-	return (enum phone_type) phone_util.GetNumberType(num);
+    return (enum phone_type) phone_util.GetNumberType(num);
 }

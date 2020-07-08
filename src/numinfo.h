@@ -38,13 +38,16 @@ static const char *phone_type_str[] = {
 /**
  * Check the validity of a number.
  *
- * @param number	Number to check
- * @param country	Two-letter country (ISO 3166-1) where the national number will be taken into account.
- * @param local		1 if the number is valid in the country specified otherwise the check is done in national and
- * 					international.
- * @return			1 if the number is valid and 0 if it is invalid.
+ * @param number	 Number to check
+ * @param country	 Two-letter country (ISO 3166-1) where the national number will be taken into account.
+ * @param local		 1 if the number is valid in the country specified otherwise the check is done in national and
+ * 					 international.
+ * @param short_code 0 Don't check if the number is a short number
+ *                   1 Check only if it's a short number
+ *                   2 Check if it's a short number or a classic number
+ * @return			 1 if the number is valid and 0 if it is invalid.
  */
-int is_valid_number(char* number, char* country, int local);
+int is_valid_number(char* number, char* country, int local, int short_code);
 
 /**
  * Get the country based on the number's information.

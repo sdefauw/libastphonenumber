@@ -10,10 +10,16 @@ void print_region_info(char* country) {
 void print_num_info(char* num, char* country) {
 	char buf[100];
 
-	printf("=== NUMBER INFO ===\n");
+    printf("=== NUMBER VALIDITY ===\n");
 
-	printf(" - Is valid number: %s\n", BOOL2STR(is_valid_number(num, country, 0)));
-	printf(" - Is valid number for %s: %s\n", country, BOOL2STR(is_valid_number(num, country, 1)));
+	printf(" - Is valid number: %s\n", BOOL2STR(is_valid_number(num, country, 0, 0)));
+    printf(" - Is valid short number: %s\n", BOOL2STR(is_valid_number(num, country, 0, 1)));
+    printf(" - Is valid number or short number: %s\n", BOOL2STR(is_valid_number(num, country, 0, 2)));
+	printf(" - Is valid number for %s: %s\n", country, BOOL2STR(is_valid_number(num, country, 1, 0)));
+    printf(" - Is valid short number for %s: %s\n", country, BOOL2STR(is_valid_number(num, country, 1, 1)));
+    printf(" - Is valid number or short number for %s: %s\n", country, BOOL2STR(is_valid_number(num, country, 1, 2)));
+
+    printf("=== NUMBER INFO ===\n");
 
 	printf(" - Country calling code: %d\n", get_country_code(num, country));
 	get_region(num, country, buf);

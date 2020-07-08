@@ -25,7 +25,7 @@ int is_valid_number(char* number, char* country, int local, int short_code) {
     if (local) {
         is_valid = phone_util.IsValidNumberForRegion(num, country);
     } else {
-        is_valid = phone_util.IsValidNumber(num) || short_info.IsValidShortNumber(num);
+        is_valid = phone_util.IsValidNumber(num);
     }
 
     if (short_code > 0) {
@@ -36,7 +36,6 @@ int is_valid_number(char* number, char* country, int local, int short_code) {
         }
         is_valid = (short_code == 2) ? (is_valid || is_valid_short_number) : is_valid_short_number;
     }
-
     return (int) is_valid;
 }
 

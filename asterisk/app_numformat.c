@@ -95,6 +95,18 @@
 					<enum name="l">
 						<para>Check if the number is valid only in the country specified.</para>
 					</enum>
+					<enum name="s">
+						<para>Check if the number is a valid short number.</para>
+					</enum>
+					<enum name="ls">
+						<para>Check if the number is a valid short number only in the country specified.</para>
+					</enum>
+					<enum name="a">
+						<para>Check if the number is a valid number or a valid short number.</para>
+					</enum>
+					<enum name="la">
+						<para>Check if the number is a valid number or a valid short number only in the country specified.</para>
+					</enum>
 				</enumlist>
 			</parameter>
 		</syntax>
@@ -158,7 +170,7 @@
 #define BOOL2STR(b)     b ? "Yes" : "No"
 
 static int (*num_format_fn)(char *, char *, enum phone_format, char *);
-static int (*is_valid_number_fn)(char* , char*, int);
+static int (*is_valid_number_fn)(char* , char*, int, int);
 static int (*get_region_fn)(char* , char* , char *);
 static int (*get_country_code_fn)(char* , char*);
 static enum phone_type (*get_number_type_fn)(char* , char*);
@@ -258,9 +270,15 @@ static char *cli_formatnum_e164(struct ast_cli_entry *e, int cmd, struct ast_cli
 	ast_cli(a->fd, " - Number: %s\n", number);
 	ast_cli(a->fd, " - Country: %s\n", country);
 
+    ast_cli(a->fd, "Number validation\n");
+    ast_cli(a->fd, " - Is valid number: %s\n", BOOL2STR((*is_valid_number_fn)(number, country, 0, 0)));
+    ast_cli(a->fd, " - Is valid short number:: %s\n", BOOL2STR((*is_valid_number_fn)(number, country, 0, 1)));
+    ast_cli(a->fd, " - Is valid number or short number:: %s\n", BOOL2STR((*is_valid_number_fn)(number, country, 0, 2)));
+    ast_cli(a->fd, " - Is valid number in %s: %s\n", country, BOOL2STR((*is_valid_number_fn)(number, country, 1, 0)));
+    ast_cli(a->fd, " - Is valid short number in %s: %s\n", country, BOOL2STR((*is_valid_number_fn)(number, country, 1, 1)));
+    ast_cli(a->fd, " - Is valid number or short number in %s: %s\n", country, BOOL2STR((*is_valid_number_fn)(number, country, 1, 2)));
+
 	ast_cli(a->fd, "Number information\n");
-	ast_cli(a->fd, " - Is valid number: %s\n", BOOL2STR((*is_valid_number_fn)(number, country, 0)));
-	ast_cli(a->fd, " - Is valid number in %s: %s\n", country, BOOL2STR((*is_valid_number_fn)(number, country, 1)));
 	ast_cli(a->fd, " - Country calling code: %d\n", (*get_country_code_fn)(number, country));
 	(*get_region_fn)(number, country, buf);
 	ast_cli(a->fd, " - Country: %s\n", buf);
@@ -339,31 +357,55 @@ static int valid_num_func_read(struct ast_channel *chan, const char *cmd, char *
 {
 	char *number, *country, *option;
 	int is_valid;
+	int opt_local, opt_short_code;
 
 	number = ast_strdupa(data);
 
+	// Get the country
 	if ((country = strchr(number, ':'))) {
 		*country = '\0';
 		country++;
 	}
 
+	// Get the option value
 	if (country && (option = strchr(country, ':'))) {
 		*option = '\0';
 		option++;
 	}
 
+	// Check if the number or the country is not empty
 	if (ast_strlen_zero(number) || ast_strlen_zero(country)) {
 		ast_log(LOG_ERROR, "This function needs a number and a country: number:country\n");
 		return 0;
 	}
-	if(!ast_strlen_zero(option) && strcasecmp(option, "l")) {
+
+	// Check validity of the option
+	if (ast_strlen_zero(option)) {
+        opt_local = 0;
+        opt_short_code = 0;
+    } else if (!strcasecmp(option, "l")) {
+        opt_local = 1;
+        opt_short_code = 0;
+    } else if (!strcasecmp(option, "s")) {
+        opt_local = 0;
+        opt_short_code = 1;
+    } else if (!strcasecmp(option, "ls")) {
+        opt_local = 1;
+        opt_short_code = 1;
+    } else if (!strcasecmp(option, "a")) {
+        opt_local = 0;
+        opt_short_code = 2;
+    } else if (!strcasecmp(option, "la")) {
+        opt_local = 1;
+        opt_short_code = 2;
+    } else {
 		ast_log(LOG_ERROR, "Invalid option.\n");
 		return 0;
 	}
 
 	// Check validity of the number
-	is_valid = (*is_valid_number_fn)(number, country, (!ast_strlen_zero(option) && *option == 'l'));
-	if (!ast_strlen_zero(option) && *option == 'l') {
+	is_valid = (*is_valid_number_fn)(number, country, opt_local, opt_short_code);
+	if (opt_local) {
 		ast_debug(3, "Number %s is %s format in country %s.\n", number, is_valid ? "a valid" : "an invalid", country);
 	} else {
 		ast_debug(3, "Number %s is %s format.\n", number, is_valid ? "a valid" : "an invalid");

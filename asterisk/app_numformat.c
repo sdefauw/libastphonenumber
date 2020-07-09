@@ -272,8 +272,8 @@ static char *cli_formatnum_e164(struct ast_cli_entry *e, int cmd, struct ast_cli
 
 	ast_cli(a->fd, "Number validation\n");
 	ast_cli(a->fd, " - Is valid number: %s\n", BOOL2STR((*is_valid_number_fn)(number, country, 0, 0)));
-	ast_cli(a->fd, " - Is valid short number:: %s\n", BOOL2STR((*is_valid_number_fn)(number, country, 0, 1)));
-	ast_cli(a->fd, " - Is valid number or short number:: %s\n", BOOL2STR((*is_valid_number_fn)(number, country, 0, 2)));
+	ast_cli(a->fd, " - Is valid short number: %s\n", BOOL2STR((*is_valid_number_fn)(number, country, 0, 1)));
+	ast_cli(a->fd, " - Is valid number or short number: %s\n", BOOL2STR((*is_valid_number_fn)(number, country, 0, 2)));
 	ast_cli(a->fd, " - Is valid number in %s: %s\n", country, BOOL2STR((*is_valid_number_fn)(number, country, 1, 0)));
 	ast_cli(a->fd, " - Is valid short number in %s: %s\n", country, BOOL2STR((*is_valid_number_fn)(number, country, 1, 1)));
 	ast_cli(a->fd, " - Is valid number or short number in %s: %s\n", country, BOOL2STR((*is_valid_number_fn)(number, country, 1, 2)));

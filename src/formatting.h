@@ -11,26 +11,26 @@ extern "C" {
  *  Example: 0473012345 in BE
  */
 enum phone_format {
-	// +32473012345
+    // +32473012345
     PLUSE164,
 
-	// 32473012345
+    // 32473012345
     E164,
 
-	// +32 473 01 23 45
+    // +32 473 01 23 45
     INTERNATIONAL,
 
-	// 003247012345
-	EXTERNAL_CALL,
+    // 003247012345
+    EXTERNAL_CALL,
 
-	// 0473 01 23 45
-	NATIONAL,
+    // 0473 01 23 45
+    NATIONAL,
 
-	// 0473012345
-	NATIONAL_COMPACT,
+    // 0473012345
+    NATIONAL_COMPACT,
 
-	// 473012345
-	NATIONAL_SHORT
+    // 473012345
+    NATIONAL_SHORT
 };
 
 /**
@@ -42,7 +42,7 @@ enum phone_format {
  * @param formatted		Number that will be formatted.
  * @return 				0 if there is no issue, otherwise 1
  */
-int num_format(char* number, char* country, enum phone_format type, char* formatted);
+int num_format(char *number, char *country, enum phone_format type, char *formatted);
 
 #ifdef __cplusplus
 }
